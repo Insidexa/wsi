@@ -1,0 +1,69 @@
+buildscript {
+    ext.kotlin_version = "1.3.21"
+    ext.ktor_version = "1.1.3"
+    ext.logback_version = "1.2.3"
+    ext.koin_version = "2.0.1"
+    ext.junitVersion = "5.4.2"
+    ext.exposedVersion = "0.20.1"
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: "kotlin"
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url "https://dl.bintray.com/kotlin/ktor" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+
+    compile "io.ktor:ktor-server-cio:$ktor_version"
+    compile "io.ktor:ktor-websockets:$ktor_version"
+
+    compile "org.koin:koin-core:$koin_version"
+    compile "org.koin:koin-core-ext:$koin_version"
+
+    compile "org.slf4j:slf4j-simple:1.6.1"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
+
+    compile "com.natpryce:konfig:1.6.10.0"
+
+    compile "io.ktor:ktor-html-builder:$ktor_version"
+
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    compile "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+    // https://mvnrepository.com/artifact/de.mkammerer/argon2-jvm
+    compile group: 'de.mkammerer', name: 'argon2-jvm', version: '2.1'
+
+    // https://mvnrepository.com/artifact/am.ik.yavi/yavi
+    compile group: 'am.ik.yavi', name: 'yavi', version: '0.2.5'
+
+    compile group: "org.jetbrains.exposed", name: "exposed-core", version: exposedVersion
+    compile group: "org.jetbrains.exposed", name: "exposed-dao", version: exposedVersion
+    compile group: "org.jetbrains.exposed", name: "exposed-jdbc", version: exposedVersion
+    compile group: "org.jetbrains.exposed", name: "exposed-jodatime", version: exposedVersion
+    compile "org.postgresql:postgresql:42.2.2"
+    compile project(':wsi')
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+test {
+    useJUnitPlatform()
+}
