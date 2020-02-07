@@ -6,7 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.experimental.builder.factory
 import org.koin.experimental.builder.single
-import wsi.ServerStarted
+import wsi.server.ServerStarted
 import wsi.router.Handler
 import wsi.websocket.WebSocketModule
 import kotlin.reflect.KClass

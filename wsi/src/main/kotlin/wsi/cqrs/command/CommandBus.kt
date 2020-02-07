@@ -1,10 +1,12 @@
 package wsi.cqrs.command
 
-import org.koin.core.KoinComponent
+import org.koin.core.KoinApplication
 import kotlin.reflect.full.findAnnotation
 
-class CommandBus: KoinComponent {
-    private val definitions = getKoin().rootScope.beanRegistry.getAllDefinitions()
+class CommandBus(
+        private val koinApp: KoinApplication
+) {
+    private val definitions = koinApp.koin.rootScope.beanRegistry.getAllDefinitions()
 
     suspend fun <R: Any> execute(command: Any): R {
         val commandClass = command::class
@@ -14,7 +16,7 @@ class CommandBus: KoinComponent {
             type != null && type.clazz == commandClass
         } ?: throw RuntimeException("Command $commandClass not found")
 
-        val handler = getKoin().get<Command<Any>>(
+        val handler = koinApp.koin.get<Command<Any>>(
                 clazz = commandHandler::primaryType.get(),
                 qualifier = null,
                 parameters = null

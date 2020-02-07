@@ -1,10 +1,12 @@
 package wsi.cqrs.event
 
-import org.koin.core.KoinComponent
+import org.koin.core.KoinApplication
 import kotlin.reflect.full.findAnnotation
 
-class EventBus: KoinComponent {
-    private val definitions = getKoin().rootScope.beanRegistry.getAllDefinitions()
+class EventBus(
+        private val koinApp: KoinApplication
+) {
+    private val definitions = koinApp.koin.rootScope.beanRegistry.getAllDefinitions()
 
     suspend fun execute(command: Any) {
         val eventHandlers = definitions.filter { it ->
@@ -14,7 +16,7 @@ class EventBus: KoinComponent {
         }
 
         eventHandlers.forEach { it ->
-            val handler = getKoin().get<Event<Any>>(
+            val handler = koinApp.koin.get<Event<Any>>(
                     clazz = it::primaryType.get(),
                     qualifier = null,
                     parameters = null

@@ -1,11 +1,11 @@
 package wsi.cqrs
 
-import org.jetbrains.exposed.dao.id.UUIDTable
+//import org.jetbrains.exposed.dao.id.UUIDTable
 
 class EntityManager {
-    suspend fun <T: UUIDTable>persist(
-            event: T
-    ) {
+//    suspend fun <T: UUIDTable>persist(
+//            event: T
+//    ) {
 //        suspendedTransactionAsync {
 //            event.new(UUID.randomUUID()) {
 //                name = event::class.simpleName!!
@@ -14,5 +14,5 @@ class EntityManager {
 //                createdAt = DateTime.now()
 //            }
 //        }.await()
-    }
+//    }
 }

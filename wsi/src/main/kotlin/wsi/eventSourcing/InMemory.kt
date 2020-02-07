@@ -1,8 +1,4 @@
-package jashkasoft.ithink.core.event.sourcing
-
-import wsi.eventSourcing.AggregateType
-import wsi.eventSourcing.Event
-import wsi.eventSourcing.EventStore
+package wsi.eventSourcing
 
 class InMemory: EventStore {
     private val events = mutableListOf<Event>()

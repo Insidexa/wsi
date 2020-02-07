@@ -1,4 +1,4 @@
-package wsi
+package wsi.server
 
 import com.natpryce.konfig.Configuration
 import com.natpryce.konfig.Key
@@ -11,18 +11,19 @@ import io.ktor.routing.routing
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
 import io.ktor.websocket.WebSockets
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.KoinApplication
 import org.slf4j.LoggerFactory
 import wsi.extensions.registerWSModule
 import wsi.router.CommandRouter
 import wsi.websocket.WebSocketModule
 import java.util.concurrent.TimeUnit
 
-class Server(private val modules: List<WebSocketModule>) : KoinComponent {
-    private val config: Configuration by inject()
-    private val router: CommandRouter by inject()
-    private val koinInstance = getKoin()
+class Server(
+        private val modules: List<WebSocketModule>,
+        private val config: Configuration,
+        private val router: CommandRouter,
+        private val koinApp: KoinApplication
+) {
     private val logger = LoggerFactory.getLogger("wsi.${Server::class.simpleName}")
 
     private val SERVER_PORT = Key("SERVER_PORT", intType)
@@ -30,11 +31,10 @@ class Server(private val modules: List<WebSocketModule>) : KoinComponent {
     private val IDLE_TIMEOUT = Key("IDLE_TIMEOUT", intType)
 
     suspend fun start() {
-        val koin = getKoin()
-        val onServerStarted = koin.getOrNull<ServerStarted>()
-        val onServerStarting = koin.getOrNull<ServerStarting>()
-        val onServerStopping = koin.getOrNull<ServerStopping>()
-        val onServerStopped = koin.getOrNull<ServerStopped>()
+        val onServerStarted = koinApp.koin.getOrNull<ServerStarted>()
+        val onServerStarting = koinApp.koin.getOrNull<ServerStarting>()
+        val onServerStopping = koinApp.koin.getOrNull<ServerStopping>()
+        val onServerStopped = koinApp.koin.getOrNull<ServerStopped>()
         val server = embeddedServer(
                 host = config[SERVER_HOST],
                 factory = CIO,
@@ -53,6 +53,7 @@ class Server(private val modules: List<WebSocketModule>) : KoinComponent {
                 onServerStopping?.let { onServerStopping.invoke() }
             }
             environment.monitor.subscribe(ApplicationStopped) {
+                println("stooped")
                 onServerStopped?.let { onServerStopped.invoke() }
             }
 
@@ -62,15 +63,16 @@ class Server(private val modules: List<WebSocketModule>) : KoinComponent {
                 get("/") { call.respondHtml {  } }
 
                 modules.forEach { module ->
-                    registerWSModule(module, koinInstance)
+                    registerWSModule(module, koinApp.koin)
                     router.registerModuleHandlers(module)
-                    logger.info("Module {} registered", module::class.simpleName)
+                    logger.info("Module {} registered on path \"/{}\"", module::class.simpleName, module.connectionPath())
                 }
             }
         }
 
         Runtime.getRuntime().addShutdownHook(Thread {
-            server.stop(1, 5, TimeUnit.SECONDS)
+            koinApp.close()
+            server.stop(1, 5)
         })
         server.start(wait = true)
     }

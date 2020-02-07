@@ -1,4 +1,4 @@
-package wsi
+package wsi.server
 
 interface ServerStarted {
     fun invoke()

@@ -9,9 +9,3 @@ services:
       POSTGRES_PASSWORD: root
       POSTGRES_USER: root
       POSTGRES_DB: test
-  liquibase:
-    image: zenika/kotlin
-    volumes:
-      - ./:/var/www
-    working_dir: /var/www
-    entrypoint: /var/www/liquibase/entrypoint.sh
