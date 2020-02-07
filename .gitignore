@@ -10,4 +10,3 @@ private.der
 public.der
 wsi/.gradle/
 wsi/build/
-src/main/resources/liquibase.properties

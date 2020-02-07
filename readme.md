@@ -2,10 +2,9 @@ Configuration
 
 dev  
 copy `src/main/resources/application.example.properties` -> `src/main/resources/application.properties`  
-copy `src/main/resources/liquibase.example.properties` -> s`rc/main/resources/liquibase.properties`  
 
 production  
-application use environment variables for `application.properties`
+application use environment variables names from `application.properties` over properties values
 
 
 How to create certificates  
